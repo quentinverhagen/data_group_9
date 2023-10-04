@@ -1,4 +1,4 @@
-Data assignment 1 Amsterdam Paralympics 
+# Data assignment 1 Amsterdam Paralympics 
 
 Amsterdam wants to host an open water swimming event in May 2024, just before the Paralympics in the Seine, Paris will take place. The municipality wants to host a 5 kilometre open water swimming event through the canals of Amsterdam. We are asked to advise on the feasibility of this event looking at the safety of the swimmers. The event can’t have an impact on commercial water transport and it is desirable if the impact on the routes of canal boats is also as small as possible. To give a proper advise, it is needed to know if the water quality of the canals is safe for the athletes to swim in. Data sets recording the surface water quality and/or ground water quality in the canals are thus needed. On top of this, there are data sets needed about which waters and canals commercial water transport uses and about the routes of canal boats. 
 
@@ -13,11 +13,9 @@ Waternet monitors the water quality in Amsterdam once or twice a month. They do 
 Regarding the commercial water transport, the municipality of Amsterdam has a map showing the ‘Op- en afstaplocaties beroepsvaart’. (Gemeente Amsterdam, n.d.-b) This is geospatial data in which dots show the boarding and disembarking locations of commercial transportation on a map of Amsterdam. Another map shows the berths of canal boats. (Gemeente Amsterdam, n.d.-c) This tells us something about where these boats drive. The websites myShip Tracking and Marine Traffic monitor the movements of boats and vessels. The canal boats and other commercial water transport in Amsterdam can thus be tracked on this website. On the website, geospatial data is displayed on a map. All boats can be seen as points on this map. On top of this, past trajectories can be obtained. (MarineTraffic, n.d.) (MyShip Tracking, n.d.) 
 
  
-
 Conclusion, 2 days before estimate, meteorology monitoring -> predict for the day 
 
-References 
-
+## References 
 Gemeente Amsterdam. (n.d.-a). Meetresultaten kwaliteitsonderzoek oppervlaktewater, 2019. Retrieved on September 27, 2023, from https://data.amsterdam.nl/datasets/lAqjIsj-_a7psg/water-in-amsterdam/,/ 
 
 Gemeente Amsterdam. (n.d.-b). Op- en afstaplocaties beroepsvaart. Retrieved on September 27 2023, from https://data.amsterdam.nl/data/geozoek/?center=52.3731295%2C4.8933141&lagen=water-op_afstaplocaties_passagiersvaart%7Cwater-op_afstaplocaties_passagiersvaart_laden_lossen%7Cwater-laden_lossen_transport_over_water%7Cwater-exclusieve_op_afstaplocatie_passagiersvaart&legenda=true. 
