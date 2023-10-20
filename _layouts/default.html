@@ -16,14 +16,13 @@
     <a id="skip-to-content" href="#content">Skip to the content.</a>
 
     <header class="page-header" role="banner">
-      <img class="logo" src="/logo.png" width="255" height="235" />
+      <img class="logo" src="images/logo.png" width="255" height="235" />
       <!--<h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>-->
       <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
       {% endif %}
       {% if site.show_downloads %}
-        <a href="https://github.com/quentinverhagen/data_group_9" class="btn">View on Github</a>
         <a href="https://github.com/quentinverhagen/data_group_9/archive/refs/heads/main.zip" class="btn">Download Assignments .zip</a>
         
       {% endif %}
