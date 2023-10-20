@@ -8,7 +8,7 @@ description: Assignment 3
 ## Assignment 3: Housing
 Below you will find the answers to the questions and our Python code used in the third assignment. All code for running it yourself is to be found in our github.
 
-### Question 1: What will Amsterdam receive from tourist tax if the event lasts a week and there will bee 30.000 visitors?
+### Question 1: What will Amsterdam receive from tourist tax if the event lasts a week and there will be 30.000 visitors?
 To calculate how much tourist tax Amsterdam will receive from visitors that stay in AirBnBs, we need to know the amount of private rooms and apartments booked. In order to do this, we need to know how many people can stay per apartment, so we need to extract the amount of beds per apartment. This information is contained in the 'name' column in the listings file of AirBnB. So, we first splitted the content of the 'name' column and remove the rating. Subsequently we put these splitted contents in different columns and added these to the complete dataframe in the listings file. We did this, because some rows did contain a rating and some did not. When they didn't, the contents of successive columns would all move one cell forward. Each column would subsequently not contain the corresponding information. For example cell with data about 'Bedrooms' would move into the ratings column. With removing the rating data, all 'name' columns only contained the information about property, bedrooms, beds and bathrooms.
 
 
@@ -285,9 +285,7 @@ for index in bnb_street.index:
     
 
 
-We made a set out of the list, so every street only occured once. This way we could count how many times a street occured in the list, using the set and we could now find which street has the most AirBnBs
-
-```python
+# We made a set out of the list, so every street only occured once. This way we could count how many times a street occured in the list, using the set and we could now find which street has the most AirBnBs
 # (https://medium.com/@Saslow/how-do-you-get-the-matching-elements-in-an-integer-array-2ea5d01712bd)
 
 list_streets_complete = list_streets #do not overwrite this code when running the geocoder function
