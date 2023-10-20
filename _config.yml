@@ -5,5 +5,3 @@ google_analytics:
 theme: jekyll-theme-cayman
 baseurl: ""
 
-plugins:
-  - jekyll-image-size
