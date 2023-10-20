@@ -129,6 +129,8 @@ for index in bnb_nf.index:
 total_tax_apart = df_apart_tax['price_tax'].sum()*7
 print(f'\nThe total amount of tourist tax Amsterdam will receive from apartments on AirBnB in a week is \u20ac {total_tax_apart: .2f} \n')
 
+# Not all 30.000 visitors can stay in AirBnB apartments, as we calculated that there are not enough private rooms and apartments available for a week. The other visitors will have to stay in other apartments or hotels. To still calculate the tourist tax received from these visitors, we calculated the average price of an AirBnb. With this it was possible to calculate the received tax. We assumed again that people would stay in two beds / rooms.
+
 average_price = bnb_df['price'].mean()
 amount_not = int(-(-(visitors - people_private - people_ap)/2 // 1))
 tax_other = amount_not*average_price*tourist_tax*7
@@ -202,7 +204,6 @@ print(f'\nThe total amount of tourist tax Amsterdam will receive from bookings d
     The total amount of tourist tax Amsterdam will receive from bookings during the event with 30.000 visitors in a week is €  2768213.70
     
 
-Not all 30.000 visitors can stay in AirBnB apartments, as we calculated that there are not enough private rooms and apartments available for a week. The other visitors will have to stay in other apartments or hotels. To still calculate the tourist tax received from these visitors, we calculated the average price of an AirBnb. With this it was possible to calculate the received tax. We assumed again that people would stay in two beds / rooms.
 
 
 ### Question 2: Plot the amount of AirBnb locations per neighbourhood.
@@ -255,13 +256,11 @@ plt.title('Amount of AirBnBs per neighbourhood in Amsterdam', size = 12)
     
 ![png](images/assignment_3_3_2.png)
     
-To plot the amount of AirBnB locations per neighbourhood, we calculated how much locations there were per neighbourhood.
+To plot the amount of AirBnB locations per neighbourhood, we calculated how many locations there were per neighbourhood.
 
-### Question 3: Which street in Amstrdam has the most AirBnB apartments?
+### Question 3: Which street in Amsterdam has the most AirBnB apartments?
 
-To find out which street has the most AirBnB apartments, we needed to import geocoder. We took the 'latitude' and 'longitude' columns
-and iterated over these, extracting the coordinates from each apartment. With the geocoder we could get the street from these coordinates.
-At one point we get an error, which says 'Coords are not within the world's geographical boundary'. We went further with all the streets that were calculated.
+To find out which street has the most AirBnB apartments, we needed to import geocoder. We took the 'latitude' and 'longitude' columns and iterated over these, extracting the coordinates from each apartment. With the geocoder we could get the street from these coordinates.
 
 
 ```python
@@ -284,20 +283,7 @@ for index in bnb_street.index:
     g = geocoder.osm(df_street['coordinates'][index], method='reverse')
     list_streets.append(g.json['street'])
     
-```
 
-
-    ---------------------------------------------------------------------------
-
-    KeyError                                  Traceback (most recent call last)
-
-    c:\Users\quent\OneDrive\Documents\GitHub\data_group_9\Assignment 3\Assignment_3.ipynb Cell 6 line 2
-         <a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=19'>20</a> df_street.loc[index] = [coordinates]
-         <a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=20'>21</a> g = geocoder.osm(df_street['coordinates'][index], method='reverse')
-    ---> <a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=21'>22</a> list_streets.append(g.json['street'])
-    
-
-    KeyError: 'street'
 
 We made a set out of the list, so every street only occured once. This way we could count how many times a street occured in the list, using the set and we could now find which street has the most AirBnBs
 

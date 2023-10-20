@@ -844,6 +844,12 @@ print("There is", area, "m2 of flat roof space in Amsterdam. This is enough spac
 
 There is 18921074 m2 of flat roof space in Amsterdam. This is enough space for 9753130 solar panels. More then sufficient then the 22496 solar panels that are required. To produce the energy with windturbines, 1.2 windturbines are needed. This also fits in the cuurent plans of the municipality to build wind turbines within the municipal boundaries
 
+To conclude: Canal boats seem to be mostly present in the outer region of the canal belt in Amsterdam. Our data shows that especially the Prinsengracht and the Singelgracht receive quite a lot of boat traffic. As such these waterways should be avoided.
+
+There are significant challenges related to the energy transition of canal boats from diesel to electricity.  Practically all canal boats are diesel powered in the current situation. Our calculations show that it takes about 7 to 8.5 years to recover the investment cost for an electricity powered canal boat. This is a very reasonable time frame and this transition is economically feasible. If needed the municipality could provide loans to boat owners to speed up the transition.
+
+The required energy production for this transition can easily be accommodated within Amsterdam. There is still more then sufficient space available to produce the energy needed within the city limits of Amsterdam in the form of solar or wind energy.
+
 Note: For question 7 and 8 we could not find data to provide a properly substantiated answer.
 
 ### References
