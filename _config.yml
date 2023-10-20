@@ -1,0 +1,9 @@
+#title: ""
+description: On this webpage you will find all of Assignments by Group 9!
+show_downloads: true
+google_analytics:
+theme: jekyll-theme-cayman
+baseurl: ""
+
+plugins:
+  - jekyll-image-size
