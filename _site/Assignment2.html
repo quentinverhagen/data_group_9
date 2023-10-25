@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Assignment 2</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Assignment 2" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Assignment 2" />
+<meta property="og:description" content="Assignment 2" />
+<link rel="canonical" href="http://localhost:4000/Assignment2.html" />
+<meta property="og:url" content="http://localhost:4000/Assignment2.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Assignment 2" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Assignment 2","headline":"Assignment 2","url":"http://localhost:4000/Assignment2.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <img src="/images/logo.png" 
+    alt="logo" width="255" height="235"/>
+      <!--<h1 class="project-name">Assignment 2</h1>-->
+      <h2 class="project-tagline">Assignment 2</h2>
+      
+      
+        <a href="https://github.com/quentinverhagen/data_group_9/archive/refs/heads/main.zip" class="btn">Download Assignments .zip</a>
+      
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <p><a href="./">Back</a></p>
+<h2 id="assignment-2-tour-boats">Assignment 2: Tour Boats</h2>
+<p>Below you will find the answers to the questions and our Python code used in the second assignment. All code for running it yourself is to be found in our github.</p>
+
+<h3 id="question-1-how-many-of-the-canal-boats-currently-in-use-are-dieselfossil-fuel-driven-and-how-many-boats-are-electrical-driven">Question 1: How many of the canal boats currently in use are diesel/fossil fuel driven and how many boats are electrical driven?</h3>
+
+<p>To answer this we use the passenger shipping register of the municipality of Amsterdam.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Scrape data from the online register passagiersvaart
+</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="c1">#Access the website containing the municipal passenger shipping register
+</span><span class="n">URL</span> <span class="o">=</span> <span class="s">"https://www.amsterdam.nl/verkeer-vervoer/varen-amsterdam/varen-beroepsvaart/register-passagiersvaart-amsterdam/"</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">URL</span><span class="p">)</span>
+
+<span class="c1">#Retreive HTML data
+</span><span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">page</span><span class="p">.</span><span class="n">content</span><span class="p">,</span> <span class="s">"html.parser"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#transform data into lists for every column
+</span>
+<span class="n">l1</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">l2</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">td_tag</span> <span class="ow">in</span> <span class="n">soup</span><span class="p">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">'td'</span><span class="p">):</span>
+    <span class="n">l1</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">td_tag</span><span class="p">.</span><span class="n">text</span><span class="p">)</span> 
+<span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">operators</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">amount</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">numberinuse</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">segment</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">enddate</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">area</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">operators</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">l2</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">name</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">amount</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">numberinuse</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">segment</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">enddate</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">7</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="n">area</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> 
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#combine lists into dictionary
+</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
+
+<span class="n">canalboatsdic</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">zip_longest</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span>
+                            <span class="n">operators</span><span class="p">,</span>
+                            <span class="n">name</span><span class="p">,</span>
+                            <span class="n">amount</span><span class="p">,</span>
+                            <span class="n">numberinuse</span><span class="p">,</span>
+                            <span class="n">segment</span><span class="p">,</span>
+                            <span class="n">enddate</span><span class="p">,</span>
+                            <span class="n">area</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">#References: Stackoverflow
+</span></code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Transform the dictionary into a dataframe
+</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">canalboatsdic</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">"Operator"</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s">"Name of boat(s)"</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s">"Amount of boats"</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s">"Number of boats in use"</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s">"Segment"</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s">"End date"</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s">"Area"</span>  <span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Operator</th>
+      <th>Name of boat(s)</th>
+      <th>Amount of boats</th>
+      <th>Number of boats in use</th>
+      <th>Segment</th>
+      <th>End date</th>
+      <th>Area</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>Adam's Boats B.V.</td>
+      <td>Adam 01 t/m Adam 10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>onbemand</td>
+      <td>1 maart 2026</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Ambolux Classic Ecoboats</td>
+      <td>Ambolux 3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>bemand open</td>
+      <td>1 maart 2030</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Amsterdam Boat Adventures vof</td>
+      <td>Amsterdam Boat Adventures</td>
+      <td>1</td>
+      <td>1</td>
+      <td>bemand open</td>
+      <td>1 maart 2028</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Amsterdam Boat Center</td>
+      <td>Amigo</td>
+      <td>1</td>
+      <td>1</td>
+      <td>bemand open</td>
+      <td>1 maart 2024</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Amsterdam Boat Center</td>
+      <td>Salonboot Tzar</td>
+      <td>1</td>
+      <td>1</td>
+      <td>bemand open</td>
+      <td>1 maart 2028</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Select all the canal boats
+</span>
+<span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">"Segment"</span><span class="p">]</span><span class="o">==</span><span class="s">"bemand groot"</span><span class="p">]</span>
+<span class="n">df2</span><span class="p">[</span><span class="s">"numberinuse_int"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df2</span><span class="p">[</span><span class="s">"Number of boats in use"</span><span class="p">])</span>
+<span class="n">numberofboats</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">df2</span><span class="p">[</span><span class="s">"numberinuse_int"</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"The total of canal boats in Amsterdam is"</span><span class="p">,</span> <span class="n">numberofboats</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The total of canal boats in Amsterdam is 145
+</code></pre></div></div>
+
+<p>The number of canal boats in Amsterdam is 145. The number of large electrical boats in Amsterdam is negligible. As such we assume that all of these are diesel driven.</p>
+
+<h3 id="question-2-try-to-compare-the-energy-use-of-the-canal-boats-to-some-other-activities-in-the-city">Question 2: Try to compare the energy use of the canal boats to some other activities in the city.</h3>
+<p>To answer this question we have used the TNO report that researched the energy needs of electric canal boats. The numbers from this report are imported in the code below and the total energy demand for a future fleet of electric canal boats is calculated.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">energy_usehour</span> <span class="o">=</span> <span class="mf">21.1</span> <span class="c1">#average energy use for a canal boat per hour, retreived from TNO
+</span>
+<span class="c1">#adjust type
+</span><span class="n">numberofboats</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">numberofboats</span><span class="p">)</span>
+<span class="n">energy_usehour</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">energy_usehour</span><span class="p">)</span>
+
+<span class="c1">#calculate total energy demand
+</span><span class="n">energy_demand_hour</span> <span class="o">=</span> <span class="n">numberofboats</span><span class="o">*</span><span class="n">energy_usehour</span>
+<span class="n">total_energy_demand</span> <span class="o">=</span> <span class="n">energy_demand_hour</span><span class="o">*</span><span class="mi">2500</span>
+
+<span class="c1">#compare to other activities
+</span><span class="n">energy_use_tram</span> <span class="o">=</span> <span class="mi">44124174</span> <span class="c1">#data from jaarrapport GVB
+</span><span class="n">energy_use_bus</span> <span class="o">=</span> <span class="mi">1900731</span> <span class="c1">#data from jaarrapport GVB, concers 31 electric busses
+</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"The energy demand for all canal boat per hour is"</span><span class="p">,</span> <span class="n">energy_demand_hour</span><span class="p">,</span> <span class="s">"KWh"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"The average canal boat operates 2500 hours a year. This results in a total energy demand of"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_energy_demand</span><span class="p">),</span> <span class="s">"KWh per year"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"This is"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">energy_use_tram</span><span class="o">/</span><span class="n">total_energy_demand</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s">"less than yearly energy use of trams in Amsterdam"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Compared to an electric bus, an electric canal boat uses"</span><span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">energy_use_bus</span><span class="o">/</span><span class="mi">31</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">energy_usehour</span><span class="o">*</span><span class="mi">2500</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="s">"times more energy per year."</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The energy demand for all canal boat per hour is 3059.5 KWh
+The average canal boat operates 2500 hours a year. This results in a total energy demand of 7648750 KWh per year
+This is 5.8 less than yearly energy use of trams in Amsterdam
+Compared to an electric bus, an electric canal boat uses 1.16 times more energy per year.
+</code></pre></div></div>
+
+<h3 id="question-3-are-there-peak-times-for-the-canal-boats">Question 3: Are there peak times for the canal boats?</h3>
+
+<p>We use the information from de grachtmonitor 2022 report to visualize the most and least crowded points in Amsterdams waterways.
+This reveals that the area around the Singelgracht and Amstel are the most crowded and that the inner canals have less boat traffic. Aditionally, the peak time for boat traffic is between 15.00PM and 20.00PM. The mornings are relatively quiet.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="c1">#import the data from grachtmonitor
+</span><span class="n">df_canalboats</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"data/gracht.xlsx"</span><span class="p">)</span>
+<span class="n">df_canalboats</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span>
+<span class="n">df_canalboats</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">df_canalboats</span><span class="p">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1">#sort the different measuring points by highest average value
+</span><span class="n">average_values</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">sorted_columns</span> <span class="o">=</span> <span class="n">average_values</span><span class="p">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">).</span><span class="n">index</span>
+
+<span class="c1">#Make a graph in which the busiest points are represented by red and opposite by green
+</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s">'RdYlGn'</span><span class="p">)</span>
+<span class="n">line_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">colormap</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="p">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_columns</span><span class="p">))]</span>
+
+<span class="n">x_values</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_canalboats</span><span class="p">.</span><span class="n">index</span><span class="p">))</span> 
+<span class="n">x_labels</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">index</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">[</span><span class="n">sorted_columns</span><span class="p">].</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">line_colors</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="s">'3.5'</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">x_values</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">"Time periods during the day"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">"Number of boats passing by"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">x_labels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span> 
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">df_canalboats</span><span class="p">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="images/assignment_2_10_0.png" alt="jpg" /></p>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Berlagebrug</th>
+      <th>Haarlemersluis</th>
+      <th>Korte Niezel</th>
+      <th>Korte Prinsengracht/Brouwersgracht</th>
+      <th>Nieuwe Meersluis</th>
+      <th>Prinsengracht/Leidsegracht</th>
+      <th>Prinsengracht/Reguliersgracht</th>
+      <th>Prinsengracht/Leliegracht</th>
+      <th>Reguliersgracht, zicht op 7 bogen</th>
+      <th>Singelgracht-Amstel</th>
+      <th>St. Antoniesluis/Snoekjesgracht</th>
+    </tr>
+    <tr>
+      <th>Tijd (duur)</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>9:00-10:00</th>
+      <td>52</td>
+      <td>5</td>
+      <td>4</td>
+      <td>20</td>
+      <td>7</td>
+      <td>33</td>
+      <td>16</td>
+      <td>17</td>
+      <td>19</td>
+      <td>37</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>10:00-11:00</th>
+      <td>72</td>
+      <td>24</td>
+      <td>12</td>
+      <td>44</td>
+      <td>14</td>
+      <td>65</td>
+      <td>50</td>
+      <td>44</td>
+      <td>38</td>
+      <td>85</td>
+      <td>42</td>
+    </tr>
+    <tr>
+      <th>11:00-12:00</th>
+      <td>108</td>
+      <td>40</td>
+      <td>24</td>
+      <td>68</td>
+      <td>29</td>
+      <td>112</td>
+      <td>82</td>
+      <td>82</td>
+      <td>72</td>
+      <td>139</td>
+      <td>72</td>
+    </tr>
+    <tr>
+      <th>12:00-13:00</th>
+      <td>141</td>
+      <td>44</td>
+      <td>38</td>
+      <td>91</td>
+      <td>54</td>
+      <td>140</td>
+      <td>116</td>
+      <td>91</td>
+      <td>88</td>
+      <td>180</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <th>13:00-14:00</th>
+      <td>179</td>
+      <td>57</td>
+      <td>46</td>
+      <td>102</td>
+      <td>62</td>
+      <td>165</td>
+      <td>142</td>
+      <td>84</td>
+      <td>74</td>
+      <td>237</td>
+      <td>99</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Match the measuring points with geometry data and transform it into a dataframe
+</span>
+<span class="n">listnames</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">listgeo</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">df_measuringpoints</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"data/meetpunten.xlsx"</span><span class="p">)</span> <span class="c1">#coordinates of measuring points, data retreived from google maps
+</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_measuringpoints</span><span class="p">[</span><span class="s">'Geometry'</span><span class="p">]:</span>
+    <span class="n">listgeo</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="n">listnames</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="n">dict_geo</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">listnames</span><span class="p">,</span> <span class="n">listgeo</span><span class="p">)}</span>
+<span class="n">df_geo</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dict_geo</span><span class="p">.</span><span class="n">items</span><span class="p">()),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'Name'</span><span class="p">,</span> <span class="s">'Geometry'</span><span class="p">])</span>
+<span class="n">df_geo</span><span class="p">[[</span><span class="s">'Latitude'</span><span class="p">,</span> <span class="s">'Longitude'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df_geo</span><span class="p">[</span><span class="s">'Geometry'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">', '</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">df_geo</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Geometry</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Berlagebrug</td>
+      <td>52.34731041620543, 4.912464234049668</td>
+      <td>52.34731041620543</td>
+      <td>4.912464234049668</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Haarlemersluis</td>
+      <td>52.378855408032734, 4.894052455733411</td>
+      <td>52.378855408032734</td>
+      <td>4.894052455733411</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Korte Niezel</td>
+      <td>52.3747813856251, 4.899337459619198</td>
+      <td>52.3747813856251</td>
+      <td>4.899337459619198</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Korte Prinsengracht/Brouwersgracht</td>
+      <td>52.381504406085575, 4.889320914469436</td>
+      <td>52.381504406085575</td>
+      <td>4.889320914469436</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Nieuwe Meersluis</td>
+      <td>52.3390697100906, 4.84682573678532</td>
+      <td>52.3390697100906</td>
+      <td>4.84682573678532</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Prinsengracht/Leidsegracht</td>
+      <td>52.36619139823907, 4.882766486124969</td>
+      <td>52.36619139823907</td>
+      <td>4.882766486124969</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Prinsengracht/Reguliersgracht</td>
+      <td>52.361609137238545, 4.896049060525268</td>
+      <td>52.361609137238545</td>
+      <td>4.896049060525268</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Prinsengracht/Leliegracht</td>
+      <td>52.37593571879353, 4.884250522824771</td>
+      <td>52.37593571879353</td>
+      <td>4.884250522824771</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Reguliersgracht, zicht op 7 bogen</td>
+      <td>52.36481430860875, 4.895862174664486</td>
+      <td>52.36481430860875</td>
+      <td>4.895862174664486</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Singelgracht-Amstel</td>
+      <td>52.3592314826586, 4.904608930896866</td>
+      <td>52.3592314826586</td>
+      <td>4.904608930896866</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>St. Antoniesluis/Snoekjesgracht</td>
+      <td>52.370111810214794, 4.9016282699582</td>
+      <td>52.370111810214794</td>
+      <td>4.9016282699582</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="n">gpd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">contextily</span> <span class="k">as</span> <span class="n">ctx</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+
+<span class="c1">#transform dataframe into a GeoDataFrame
+</span><span class="n">df_geo</span> <span class="o">=</span> <span class="n">gpd</span><span class="p">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df_geo</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">gpd</span><span class="p">.</span><span class="n">points_from_xy</span><span class="p">(</span><span class="n">df_geo</span><span class="p">[</span><span class="s">'Longitude'</span><span class="p">],</span> <span class="n">df_geo</span><span class="p">[</span><span class="s">'Latitude'</span><span class="p">]),</span> <span class="n">crs</span><span class="o">=</span><span class="s">"EPSG:4326"</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">df_geo</span><span class="p">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">3857</span><span class="p">).</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s">"k"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">"red"</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">ctx</span><span class="p">.</span><span class="n">add_basemap</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">providers</span><span class="p">.</span><span class="n">OpenStreetMap</span><span class="p">.</span><span class="n">Mapnik</span><span class="p">)</span> 
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">df_geo</span>
+</code></pre></div></div>
+
+<p><img src="images/assignment_2_12_0.png" alt="png" /></p>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Geometry</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Berlagebrug</td>
+      <td>52.34731041620543, 4.912464234049668</td>
+      <td>52.34731041620543</td>
+      <td>4.912464234049668</td>
+      <td>POINT (4.91246 52.34731)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Haarlemersluis</td>
+      <td>52.378855408032734, 4.894052455733411</td>
+      <td>52.378855408032734</td>
+      <td>4.894052455733411</td>
+      <td>POINT (4.89405 52.37886)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Korte Niezel</td>
+      <td>52.3747813856251, 4.899337459619198</td>
+      <td>52.3747813856251</td>
+      <td>4.899337459619198</td>
+      <td>POINT (4.89934 52.37478)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Korte Prinsengracht/Brouwersgracht</td>
+      <td>52.381504406085575, 4.889320914469436</td>
+      <td>52.381504406085575</td>
+      <td>4.889320914469436</td>
+      <td>POINT (4.88932 52.38150)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Nieuwe Meersluis</td>
+      <td>52.3390697100906, 4.84682573678532</td>
+      <td>52.3390697100906</td>
+      <td>4.84682573678532</td>
+      <td>POINT (4.84683 52.33907)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Prinsengracht/Leidsegracht</td>
+      <td>52.36619139823907, 4.882766486124969</td>
+      <td>52.36619139823907</td>
+      <td>4.882766486124969</td>
+      <td>POINT (4.88277 52.36619)</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Prinsengracht/Reguliersgracht</td>
+      <td>52.361609137238545, 4.896049060525268</td>
+      <td>52.361609137238545</td>
+      <td>4.896049060525268</td>
+      <td>POINT (4.89605 52.36161)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Prinsengracht/Leliegracht</td>
+      <td>52.37593571879353, 4.884250522824771</td>
+      <td>52.37593571879353</td>
+      <td>4.884250522824771</td>
+      <td>POINT (4.88425 52.37594)</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Reguliersgracht, zicht op 7 bogen</td>
+      <td>52.36481430860875, 4.895862174664486</td>
+      <td>52.36481430860875</td>
+      <td>4.895862174664486</td>
+      <td>POINT (4.89586 52.36481)</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Singelgracht-Amstel</td>
+      <td>52.3592314826586, 4.904608930896866</td>
+      <td>52.3592314826586</td>
+      <td>4.904608930896866</td>
+      <td>POINT (4.90461 52.35923)</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>St. Antoniesluis/Snoekjesgracht</td>
+      <td>52.370111810214794, 4.9016282699582</td>
+      <td>52.370111810214794</td>
+      <td>4.9016282699582</td>
+      <td>POINT (4.90163 52.37011)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+
+<span class="c1">#format data to be suitable to join together
+</span><span class="n">df_canalboats_pivot</span> <span class="o">=</span> <span class="n">df_canalboats</span><span class="p">.</span><span class="n">T</span>
+<span class="n">measurepoints</span> <span class="o">=</span> <span class="n">df_geo</span>
+<span class="n">df_canalboats_pivot</span><span class="p">[</span><span class="s">'name_measurepoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_canalboats_pivot</span><span class="p">.</span><span class="n">index</span>
+<span class="n">df_canalboats_pivot</span> <span class="o">=</span> <span class="n">df_canalboats_pivot</span><span class="p">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1">#join data 
+</span><span class="n">joinData</span> <span class="o">=</span> <span class="n">measurepoints</span><span class="p">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">'Name'</span><span class="p">).</span><span class="n">join</span><span class="p">(</span><span class="n">df_canalboats_pivot</span><span class="p">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">'name_measurepoint'</span><span class="p">))</span>
+<span class="n">outputpath</span> <span class="o">=</span> <span class="s">"output/"</span>
+
+<span class="n">hours</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">18</span><span class="p">):</span>
+    <span class="n">hours</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">joinData</span><span class="p">.</span><span class="n">columns</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+<span class="c1">#determine details for the legend
+</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">300</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1">#create image for all the time periods
+</span><span class="k">for</span> <span class="n">hour</span> <span class="ow">in</span> <span class="n">hours</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+    <span class="nb">map</span> <span class="o">=</span> <span class="n">joinData</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">hour</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s">'RdYlGn_r'</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">1250</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s">'s'</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="nb">map</span><span class="p">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">hour</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">add_basemap</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">joinData</span><span class="p">.</span><span class="n">crs</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">ctx</span><span class="p">.</span><span class="n">providers</span><span class="p">.</span><span class="n">CartoDB</span><span class="p">.</span><span class="n">Positron</span><span class="p">)</span>
+    
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">outputpath</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s">'boats_at_time.png'</span><span class="p">)</span>
+    <span class="n">mapfig</span> <span class="o">=</span> <span class="nb">map</span><span class="p">.</span><span class="n">get_figure</span><span class="p">()</span>
+    <span class="n">mapfig</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="s">'all'</span><span class="p">)</span>
+    <span class="n">mapfig</span><span class="p">.</span><span class="n">clf</span><span class="p">()</span>
+    <span class="n">gc</span><span class="p">.</span><span class="n">collect</span><span class="p">()</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="c1">#References: Stackoverflow, Youtube
+</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#combine all the images into one GIF
+</span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">images</span> <span class="o">=</span> <span class="n">glob</span><span class="p">.</span><span class="n">glob</span><span class="p">(</span><span class="n">outputpath</span> <span class="o">+</span> <span class="s">'/*.png'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+    <span class="n">image_frame</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">frames</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_frame</span><span class="p">)</span>
+
+<span class="n">frames</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">save</span><span class="p">(</span><span class="n">outputpath</span> <span class="o">+</span> <span class="s">'/boatsattime.gif'</span><span class="p">,</span> <span class="nb">format</span> <span class="o">=</span> <span class="s">'GIF'</span><span class="p">,</span> <span class="n">append_images</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">save_all</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">loop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>     
+</code></pre></div></div>
+<p>The result is this gif
+<img src="/images/boatsattime.gif" alt="gif" /></p>
+
+<h3 id="question-4-would-you-consider-it-economically-feasible">Question 4: Would you consider it economically feasible?</h3>
+
+<p>Based on the data from the TNO report, we have plotted the period it takes to recover the initial investment needed to electrify a canal boat. In the most optimistic scenario this takes little over 7 years to a maximum of about 8.5 years in the most pessimistic scenario.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Ellipse</span>
+<span class="kn">from</span> <span class="nn">matplotlib.text</span> <span class="kn">import</span> <span class="n">OffsetFrom</span>
+
+<span class="c1">#state variables
+</span><span class="n">costs_to_electric_low</span> <span class="o">=</span> <span class="mi">70000</span>
+<span class="n">costs_to_electric_high</span> <span class="o">=</span> <span class="mi">85000</span>
+<span class="n">costs_operational_loss</span> <span class="o">=</span> <span class="mi">50000</span>
+
+<span class="n">operational_hours_year</span> <span class="o">=</span> <span class="mi">3000</span>
+<span class="n">price_electricity_kwh</span> <span class="o">=</span> <span class="mf">0.39</span>
+<span class="n">price_fuel_liter</span> <span class="o">=</span> <span class="mf">1.6</span>
+<span class="n">price_fuel_kwh</span> <span class="o">=</span> <span class="n">price_fuel_liter</span><span class="o">/</span><span class="mf">2.5</span>
+
+<span class="c1">#calculate business case
+</span><span class="n">profit_from_elec</span> <span class="o">=</span> <span class="p">(</span><span class="n">price_fuel_kwh</span><span class="o">-</span><span class="n">price_electricity_kwh</span><span class="p">)</span><span class="o">*</span><span class="n">energy_usehour</span><span class="o">*</span><span class="n">operational_hours_year</span>
+
+<span class="n">business_case</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">costs_to_electric_high</span><span class="o">+</span><span class="n">costs_operational_loss</span><span class="p">)</span><span class="o">+</span><span class="n">profit_from_elec</span>
+
+<span class="n">profit_low</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
+    <span class="n">business_case</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">costs_to_electric_high</span><span class="o">+</span><span class="n">costs_operational_loss</span><span class="p">)</span><span class="o">+</span><span class="n">profit_from_elec</span><span class="o">*</span><span class="n">year</span>
+    <span class="n">profit_low</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">business_case</span><span class="p">)</span>
+
+<span class="n">profit_high</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">):</span>
+    <span class="n">business_case</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">costs_to_electric_low</span><span class="o">+</span><span class="n">costs_operational_loss</span><span class="p">)</span><span class="o">+</span><span class="n">profit_from_elec</span><span class="o">*</span><span class="n">year</span>
+    <span class="n">profit_high</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">business_case</span><span class="p">)</span>
+
+<span class="c1">#calculate payback-time
+</span><span class="n">total_cost_high</span> <span class="o">=</span> <span class="n">costs_to_electric_high</span> <span class="o">+</span> <span class="n">costs_operational_loss</span>
+<span class="n">total_cost_low</span> <span class="o">=</span> <span class="n">costs_to_electric_low</span> <span class="o">+</span> <span class="n">costs_operational_loss</span>
+
+<span class="n">year_high</span> <span class="o">=</span> <span class="n">total_cost_high</span><span class="o">/</span><span class="n">profit_from_elec</span>
+<span class="n">year_low</span> <span class="o">=</span> <span class="n">total_cost_low</span><span class="o">/</span><span class="n">profit_from_elec</span>
+<span class="k">print</span><span class="p">(</span><span class="n">year_high</span><span class="p">,</span> <span class="n">year_low</span><span class="p">)</span>
+
+<span class="c1">#plot the return on investment
+</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profit_low</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">'High cost estimate'</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s">'red'</span> <span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profit_high</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">'Low cost estimate'</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s">'green'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">'black'</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">'--'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'Time (years)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'Profit (€)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Return on investment period for the electrification of a canal boat'</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="c1">#annotate return on investment
+</span><span class="n">ax</span><span class="p">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">'It takes a maximum of 8,5 years</span><span class="se">\n</span><span class="s">to earn back the investment'</span><span class="p">,</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">year_high</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">'data'</span><span class="p">,</span>
+            <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">22</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s">'offset points'</span><span class="p">,</span>
+            <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s">"round"</span><span class="p">,</span>
+                      <span class="n">fc</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span> <span class="n">ec</span><span class="o">=</span><span class="s">"none"</span><span class="p">),</span>
+            <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">profit_from_elec</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>8.53080568720379 7.582938388625592
+15825.000000000002
+</code></pre></div></div>
+
+<p><img src="images/assignment_2_16_1.png" alt="png" /></p>
+
+<h3 id="question-5-if-only-clean-energy-can-be-used-how-many-solar-panels-or-wind-turbines-are-needed">Question 5: If only clean energy can be used, how many solar panels or wind turbines are needed?</h3>
+<p>Our calculations show that the total yearly energy demand for all canal boats is 7,6 million KWh. This is the equivelant of the annual energy production of 1,2 wind turbines or about 22.500 solar panels.</p>
+
+<h3 id="question-6-is-it-possible-to-accommodate-these-facilities-within-the-city">Question 6: Is it possible to accommodate these facilities within the city?</h3>
+<p>Yes, this easily fits in within the city limits. The total flat roof available in Amsterdam could accommodate a total of 9,7 million solar panels. Currently, there are about 1 million solar panels. This leaves plenty of room to fit in the 22.500 solar panels. Concerning wind energy, there is only need for one turbine to deliver most of the demanded energy. This fits well within the current municipal plans.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">energy_production_pv</span> <span class="o">=</span> <span class="mi">340</span> <span class="c1">#https://www.vattenfall.nl/zonnepanelen/opbrengst/
+</span><span class="n">energy_production_wind</span> <span class="o">=</span> <span class="mi">6500000</span> <span class="c1">#https://www.gaslicht.com/energie-informatie/windmolen#:~:text=Vermogen%20van%20een%20windmolen,-Hoe%20zit%20dat&amp;text=Een%20windmolen%20met%20een%20vermogen,huishouden%20van%20stroom%20kan%20voorzien.
+</span>
+<span class="n">solarpanels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_energy_demand</span><span class="o">/</span><span class="n">energy_production_pv</span><span class="p">)</span>
+<span class="n">windturbines</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">total_energy_demand</span><span class="o">/</span><span class="n">energy_production_wind</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">df_platdak</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="s">"data/Plat_dak_gemeente_20210823.xlsx"</span><span class="p">)</span>
+<span class="n">amsterdam_data</span> <span class="o">=</span> <span class="n">df_platdak</span><span class="p">[</span><span class="n">df_platdak</span><span class="p">[</span><span class="s">'Gemeentenaam 2021'</span><span class="p">]</span> <span class="o">==</span> <span class="s">"Amsterdam"</span><span class="p">]</span>
+<span class="n">last_index</span> <span class="o">=</span> <span class="n">amsterdam_data</span><span class="p">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">get_next_rows</span> <span class="o">=</span> <span class="n">df_platdak</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">last_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">last_index</span> <span class="o">+</span> <span class="mi">13</span><span class="p">]</span>
+<span class="n">df_platdak_total</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">concat</span><span class="p">([</span><span class="n">amsterdam_data</span><span class="p">,</span> <span class="n">get_next_rows</span><span class="p">])</span>
+<span class="n">area</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_platdak_total</span><span class="p">[</span><span class="s">"Wel plat dak (m2)"</span><span class="p">]:</span>
+    <span class="c1">#print(row)
+</span>    <span class="n">area</span> <span class="o">=</span> <span class="n">area</span> <span class="o">+</span> <span class="n">row</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">"There is"</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="s">"m2 of flat roof space in Amsterdam. This is enough space for"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">area</span><span class="o">/</span><span class="mf">1.94</span><span class="p">),</span> <span class="s">"solar panels. More then sufficient then the"</span><span class="p">,</span> <span class="n">solarpanels</span><span class="p">,</span> <span class="s">"solar panels that are required. To produce the energy with windturbines,"</span><span class="p">,</span> <span class="n">windturbines</span><span class="p">,</span> <span class="s">"windturbines are needed. This also fits in the cuurent plans of the municipality to build wind turbines within the municipal boundaries"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>There is 18921074 m2 of flat roof space in Amsterdam. This is enough space for 9753130 solar panels. More then sufficient then the 22496 solar panels that are required. To produce the energy with windturbines, 1.2 windturbines are needed. This also fits in the cuurent plans of the municipality to build wind turbines within the municipal boundaries
+</code></pre></div></div>
+
+<p>There is 18921074 m2 of flat roof space in Amsterdam. This is enough space for 9753130 solar panels. More then sufficient then the 22496 solar panels that are required. To produce the energy with windturbines, 1.2 windturbines are needed. This also fits in the cuurent plans of the municipality to build wind turbines within the municipal boundaries</p>
+
+<p>Note: For question 7 and 8 we could not find data to provide a properly substantiated answer.</p>
+
+<h3 id="references">References</h3>
+<ul>
+  <li>https://www.youtube.com/watch?v=eBnryZKLbcE&amp;t=594s</li>
+  <li>https://realpython.com/beautiful-soup-web-scraper-python/</li>
+</ul>
+
+<p><a href="./">Back</a></p>
+
+
+      <footer class="site-footer">
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>

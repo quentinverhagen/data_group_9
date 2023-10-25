@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Assignment 3</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Assignment 3" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Assignment 3" />
+<meta property="og:description" content="Assignment 3" />
+<link rel="canonical" href="http://localhost:4000/Assignment3.html" />
+<meta property="og:url" content="http://localhost:4000/Assignment3.html" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Assignment 3" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Assignment 3","headline":"Assignment 3","url":"http://localhost:4000/Assignment3.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <img src="/images/logo.png" 
+    alt="logo" width="255" height="235"/>
+      <!--<h1 class="project-name">Assignment 3</h1>-->
+      <h2 class="project-tagline">Assignment 3</h2>
+      
+      
+        <a href="https://github.com/quentinverhagen/data_group_9/archive/refs/heads/main.zip" class="btn">Download Assignments .zip</a>
+      
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      <p><a href="./">Back</a></p>
+<h2 id="assignment-3-housing">Assignment 3: Housing</h2>
+<p>Below you will find the answers to the questions and our Python code used in the third assignment. All code for running it yourself is to be found in our github.</p>
+
+<h3 id="question-1-what-will-amsterdam-receive-from-tourist-tax-if-the-event-lasts-a-week-and-there-will-bee-30000-visitors">Question 1: What will Amsterdam receive from tourist tax if the event lasts a week and there will bee 30.000 visitors?</h3>
+<p>To calculate how much tourist tax Amsterdam will receive from visitors that stay in AirBnBs, we need to know the amount of private rooms and apartments booked. In order to do this, we need to know how many people can stay per apartment, so we need to extract the amount of beds per apartment. This information is contained in the ‘name’ column in the listings file of AirBnB. So, we first splitted the content of the ‘name’ column and remove the rating. Subsequently we put these splitted contents in different columns and added these to the complete dataframe in the listings file. We did this, because some rows did contain a rating and some did not. When they didn’t, the contents of successive columns would all move one cell forward. Each column would subsequently not contain the corresponding information. For example cell with data about ‘Bedrooms’ would move into the ratings column. With removing the rating data, all ‘name’ columns only contained the information about property, bedrooms, beds and bathrooms.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="s">"data/listings.csv"</span>
+
+<span class="n">bnb_df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<span class="n">visitors</span> <span class="o">=</span> <span class="mi">30000</span>
+
+<span class="c1"># In the function below, the ratings are removed, by replacing the star with the numbers, period and decimals and the punctuation with a space.
+# (https://docs.python.org/3/library/re.html; https://stackoverflow.com/questions/69052038/remove-using-regular-expression)
+</span><span class="k">def</span> <span class="nf">remove_ratings</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s">'★(\d+\.\d+|New) · '</span><span class="p">,</span> <span class="s">''</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cell</span>
+
+<span class="c1"># The function is applied to the 'name' column, as can be seen in the print. Subsequently this column is splitted and added to the dataframe.
+</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'name'</span><span class="p">]</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'name'</span><span class="p">].</span><span class="nb">map</span><span class="p">(</span><span class="n">remove_ratings</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'name'</span><span class="p">].</span><span class="n">head</span><span class="p">())</span>
+
+<span class="n">bnb_df</span><span class="p">[[</span><span class="s">'Property'</span><span class="p">,</span> <span class="s">'Bedrooms'</span><span class="p">,</span> <span class="s">'Beds'</span><span class="p">,</span> <span class="s">'Bathrooms'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'name'</span><span class="p">].</span><span class="nb">str</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">" · "</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Then we selected only the Private rooms
+# Selecting a minimum nights of lower than eight, as the event lasts a week. Rooms that have a required number of minimum nights
+# higher than eight are not suitable.
+# Selecting an availability per year equal or higher than seven, cause an amount lower is not suitable
+# We assume that every bed is a two persons bed, this means that in every private room, two persons can sleep.
+</span>
+<span class="n">bnb_pv</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'room_type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">"Private room"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'minimum_nights'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'availability_365'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">7</span><span class="p">)]</span>
+
+<span class="c1"># calculating how many people can stay in the private rooms
+</span><span class="n">pv_rooms</span> <span class="o">=</span> <span class="n">bnb_pv</span><span class="p">[</span><span class="s">'room_type'</span><span class="p">].</span><span class="n">size</span>
+<span class="n">people_private</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pv_rooms</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of private rooms available is'</span><span class="p">,</span> <span class="n">pv_rooms</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of people that can stay in the available private rooms in Amsterdam is'</span><span class="p">,</span> <span class="n">people_private</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1"># Then we selected only entire apartments and extracted how many varieties of bed compositions there are in the apartments
+</span>
+<span class="n">bnb_nf</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'room_type'</span><span class="p">]</span> <span class="o">!=</span> <span class="s">"Private room"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'minimum_nights'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bnb_df</span><span class="p">[</span><span class="s">'availability_365'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">7</span><span class="p">)]</span>
+
+<span class="n">bed_counts</span> <span class="o">=</span> <span class="n">bnb_nf</span><span class="p">[</span><span class="s">'Beds'</span><span class="p">].</span><span class="n">value_counts</span><span class="p">()</span>
+
+<span class="c1"># We made a dataframe from the series that results from the counting of beds
+# We removed the strings, 'bed' or 'beds' from the cells, so only the integer is left. In the bed count, still some baths ended up.
+# When this happened, the function returned a 0
+# Subsequently the total amount of two persons beds was calculated and with this the total amount of people that could sleep in the
+# available AirBnB apartments and private rooms
+# for .reset_index() = (https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.reset_index.html)
+# for iterating over rows with panda = (https://www.geeksforgeeks.org/different-ways-to-iterate-over-rows-in-pandas-dataframe/)
+</span>
+<span class="n">bed_counts_df</span> <span class="o">=</span> <span class="n">bed_counts</span><span class="p">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">bed_counts_df</span><span class="p">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">'Beds'</span><span class="p">,</span> <span class="s">'Count'</span><span class="p">]</span>
+
+<span class="c1"># function to remove the strings and only return an integer
+</span><span class="k">def</span> <span class="nf">extract_integer</span><span class="p">(</span><span class="n">cell_value</span><span class="p">):</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">cell_value</span><span class="p">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">'beds'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">'bed'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="mi">0</span>
+
+<span class="c1"># applying the function to the column 'Beds'
+</span><span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Beds'</span><span class="p">]</span> <span class="o">=</span> <span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Beds'</span><span class="p">].</span><span class="nb">apply</span><span class="p">(</span><span class="n">extract_integer</span><span class="p">)</span>
+
+<span class="c1"># creating an empty list and filling this with a for loop in which we calculate how many people can stay in the beds
+</span><span class="n">persons_column</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">bed_counts_df</span><span class="p">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">persons</span> <span class="o">=</span> <span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Beds'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span> <span class="o">*</span> <span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Count'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">persons_column</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">persons</span><span class="p">)</span>
+
+<span class="c1"># adding the persons_column list to the dataframe bed_counts_df
+</span><span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Amount of persons'</span><span class="p">]</span> <span class="o">=</span> <span class="n">persons_column</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of beds there are in apartments and how many people can stay in them:</span><span class="se">\n\n</span><span class="s">'</span><span class="p">,</span> <span class="n">bed_counts_df</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1"># calculating how many people can stay in the apartments
+</span><span class="n">people_ap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bed_counts_df</span><span class="p">[</span><span class="s">'Amount of persons'</span><span class="p">].</span><span class="nb">sum</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of people that can stay in the available AirBnB apartments in Amsterdam is'</span><span class="p">,</span> <span class="n">people_ap</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1">#calculating how many people can stay in AirBnBs
+</span><span class="n">airbnb_av</span> <span class="o">=</span> <span class="n">people_private</span> <span class="o">+</span> <span class="n">people_ap</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of people that can stay in the available AirBnB private rooms and apartments in Amsterdam during the swimming event is'</span><span class="p">,</span> <span class="n">airbnb_av</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1"># Subsequently we calculated the tourist tax. To do this, we used the iloc[] method and filled this in the new data frame
+# With this we could calculate the total tax Amsterdam would receive from private rooms and apartments
+# The tourist tax in Amsterdam is 10% (https://www.amsterdam.nl/veelgevraagd/toeristenbelasting-2c7c2#)
+</span>
+<span class="n">tourist_tax</span> <span class="o">=</span> <span class="mf">0.10</span>
+
+<span class="c1"># creating a dataframe which if filled via a for loop in which the price is multiplied with the tax
+</span><span class="n">df_private_tax</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'price_tax'</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bnb_pv</span><span class="p">)):</span>
+    <span class="n">tax</span> <span class="o">=</span> <span class="n">bnb_pv</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span> <span class="o">*</span> <span class="n">tourist_tax</span>
+    <span class="n">df_private_tax</span><span class="p">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tax</span><span class="p">]</span>
+
+<span class="c1"># calculating the total tax retrieved from private rooms
+</span><span class="n">total_tax_private</span> <span class="o">=</span> <span class="n">df_private_tax</span><span class="p">[</span><span class="s">'price_tax'</span><span class="p">].</span><span class="nb">sum</span><span class="p">()</span><span class="o">*</span><span class="mi">7</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s">The total amount of tourist tax Amsterdam will receive from private rooms on AirBnB in a week is </span><span class="se">\u20ac</span><span class="s"> </span><span class="si">{</span><span class="n">total_tax_private</span><span class="p">:</span> <span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1"># creating a dataframe which if filled via a for loop in which the price is multiplied with the tax
+</span><span class="n">df_apart_tax</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'price_tax'</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">bnb_nf</span><span class="p">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">tax</span> <span class="o">=</span> <span class="n">bnb_nf</span><span class="p">[</span><span class="s">'price'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span> <span class="o">*</span> <span class="n">tourist_tax</span>
+    <span class="n">df_apart_tax</span><span class="p">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tax</span><span class="p">]</span>
+
+<span class="c1"># calculating the total tax retrieved from apartments
+</span><span class="n">total_tax_apart</span> <span class="o">=</span> <span class="n">df_apart_tax</span><span class="p">[</span><span class="s">'price_tax'</span><span class="p">].</span><span class="nb">sum</span><span class="p">()</span><span class="o">*</span><span class="mi">7</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s">The total amount of tourist tax Amsterdam will receive from apartments on AirBnB in a week is </span><span class="se">\u20ac</span><span class="s"> </span><span class="si">{</span><span class="n">total_tax_apart</span><span class="p">:</span> <span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> </span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="n">average_price</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'price'</span><span class="p">].</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">amount_not</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">visitors</span> <span class="o">-</span> <span class="n">people_private</span> <span class="o">-</span> <span class="n">people_ap</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">//</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">tax_other</span> <span class="o">=</span> <span class="n">amount_not</span><span class="o">*</span><span class="n">average_price</span><span class="o">*</span><span class="n">tourist_tax</span><span class="o">*</span><span class="mi">7</span>
+
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s"> Average price per night of AirBnBs in Amsterdam is </span><span class="se">\u20ac</span><span class="s"> </span><span class="si">{</span><span class="n">average_price</span><span class="p">:</span> <span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> </span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s"> The amount of rooms that the people have to stay in for whom there are no available AirBnBs is'</span><span class="p">,</span> <span class="n">amount_not</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s">The total amount of tourist tax Amsterdam will receive from people staying at other places than AirBnB is </span><span class="se">\u20ac</span><span class="s"> </span><span class="si">{</span><span class="n">tax_other</span><span class="p">:</span> <span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s"> </span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="n">total_tax</span> <span class="o">=</span> <span class="n">total_tax_private</span> <span class="o">+</span> <span class="n">total_tax_apart</span> <span class="o">+</span> <span class="n">tax_other</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s">The total amount of tourist tax Amsterdam will receive from bookings during the event with 30.000 visitors in a week is </span><span class="se">\u20ac</span><span class="s"> </span><span class="si">{</span><span class="n">total_tax</span><span class="p">:</span> <span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0    Condo in Amsterdam · 1 bedroom · 1 bed · 1 sha...
+1    Rental unit in Amsterdam · 1 bedroom · 1 bed ·...
+2    Boat in Amsterdam · 1 bedroom · 1 bed · 1.5 baths
+3    Houseboat in Amsterdam · 3 bedrooms · 3 beds ·...
+4    Rental unit in Amsterdam · 1 bedroom · 1 bed ·...
+Name: name, dtype: object
+The amount of private rooms available is 1427 
+
+The amount of people that can stay in the available private rooms in Amsterdam is 2854 
+
+The amount of beds there are in apartments and how many people can stay in them:
+
+     Beds  Count  Amount of persons
+0      1   1511               1511
+1      2    863               1726
+2      3    371               1113
+3      4    231                924
+4      5     66                330
+5      6     31                186
+6      0     15                  0
+7      7     10                 70
+8      0      9                  0
+9     12      5                 60
+10     8      4                 32
+11    13      2                 26
+12    16      2                 32
+13    14      2                 28
+14     0      2                  0
+15    20      1                 20
+16    17      1                 17
+17     0      1                  0
+18    33      1                 33
+19    11      1                 11
+20    26      1                 26
+21    24      1                 24
+22    22      1                 22
+23    30      1                 30
+24    10      1                 10 
+
+The amount of people that can stay in the available AirBnB apartments in Amsterdam is 6231 
+
+The amount of people that can stay in the available AirBnB private rooms and apartments in Amsterdam during the swimming event is 9085 
+
+
+The total amount of tourist tax Amsterdam will receive from private rooms on AirBnB in a week is €  182333.90
+
+The total amount of tourist tax Amsterdam will receive from apartments on AirBnB in a week is €  722861.30 
+
+
+Average price per night of AirBnBs in Amsterdam is €  254.49 
+
+
+The amount of rooms that the people have to stay in for whom there are no available AirBnBs is 10458 
+
+
+The total amount of tourist tax Amsterdam will receive from people staying at other places than AirBnB is €  1863018.50 
+
+
+The total amount of tourist tax Amsterdam will receive from bookings during the event with 30.000 visitors in a week is €  2768213.70
+</code></pre></div></div>
+
+<p>Not all 30.000 visitors can stay in AirBnB apartments, as we calculated that there are not enough private rooms and apartments available for a week. The other visitors will have to stay in other apartments or hotels. To still calculate the tourist tax received from these visitors, we calculated the average price of an AirBnb. With this it was possible to calculate the received tax. We assumed again that people would stay in two beds / rooms.</p>
+
+<h3 id="question-2-plot-the-amount-of-airbnb-locations-per-neighbourhood">Question 2: Plot the amount of AirBnb locations per neighbourhood.</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="n">wijk_counts</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'neighbourhood'</span><span class="p">].</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">wijk_counts</span><span class="p">)</span>
+
+<span class="c1"># This could be plotted with a bar plot.
+</span><span class="n">wijk_counts</span><span class="p">.</span><span class="n">plot</span><span class="p">.</span><span class="n">bar</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="s">'green'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">"Neighbourhood"</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">"Amount of AirBnBs"</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Amount of AirBnBs per neighbourhood in Amsterdam'</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>neighbourhood
+De Baarsjes - Oud-West                    1382
+Centrum-West                              1006
+De Pijp - Rivierenbuurt                    935
+Centrum-Oost                               793
+Zuid                                       599
+Westerpark                                 584
+Oud-Oost                                   506
+Bos en Lommer                              424
+Oud-Noord                                  402
+Oostelijk Havengebied - Indische Buurt     320
+Watergraafsmeer                            262
+Noord-West                                 218
+IJburg - Zeeburgereiland                   183
+Slotervaart                                164
+Noord-Oost                                 137
+Geuzenveld - Slotermeer                    116
+Buitenveldert - Zuidas                     100
+De Aker - Nieuw Sloten                      74
+Gaasperdam - Driemond                       51
+Bijlmer-Centrum                             47
+Osdorp                                      44
+Bijlmer-Oost                                39
+Name: count, dtype: int64
+
+Text(0.5, 1.0, 'Amount of AirBnBs per neighbourhood in Amsterdam')
+</code></pre></div></div>
+
+<p><img src="images/assignment_3_3_2.png" alt="png" /></p>
+
+<p>To plot the amount of AirBnB locations per neighbourhood, we calculated how much locations there were per neighbourhood.</p>
+
+<h3 id="question-3-which-street-in-amstrdam-has-the-most-airbnb-apartments">Question 3: Which street in Amstrdam has the most AirBnB apartments?</h3>
+
+<p>To find out which street has the most AirBnB apartments, we needed to import geocoder. We took the ‘latitude’ and ‘longitude’ columns
+and iterated over these, extracting the coordinates from each apartment. With the geocoder we could get the street from these coordinates.
+At one point we get an error, which says ‘Coords are not within the world’s geographical boundary’. We went further with all the streets that were calculated.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">geopy.geocoders</span> <span class="kn">import</span> <span class="n">Nominatim</span>
+
+<span class="kn">import</span> <span class="nn">geocoder</span>
+
+<span class="c1"># source for geocoding = (https://datascientyst.com/reverse-geocoding-latitude-longitude-city-country-python-pandas/)
+</span>
+<span class="n">bnb_street</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[[</span><span class="s">'latitude'</span><span class="p">,</span> <span class="s">'longitude'</span><span class="p">]]</span>
+
+<span class="c1"># creating an empty dataframe and list and and filling this with a for loop where we get the streets from the coordinates
+</span><span class="n">df_street</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">'coordinates'</span><span class="p">])</span>
+<span class="n">list_streets</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">bnb_street</span><span class="p">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'latitude'</span><span class="p">][</span><span class="n">index</span><span class="p">],</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'longitude'</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">df_street</span><span class="p">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">coordinates</span><span class="p">]</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">geocoder</span><span class="p">.</span><span class="n">osm</span><span class="p">(</span><span class="n">df_street</span><span class="p">[</span><span class="s">'coordinates'</span><span class="p">][</span><span class="n">index</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s">'reverse'</span><span class="p">)</span>
+    <span class="n">list_streets</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">.</span><span class="n">json</span><span class="p">[</span><span class="s">'street'</span><span class="p">])</span>
+    
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+KeyError                                  Traceback (most recent call last)
+
+c:\Users\quent\OneDrive\Documents\GitHub\data_group_9\Assignment 3\Assignment_3.ipynb Cell 6 line 2
+     &lt;a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=19'&gt;20&lt;/a&gt; df_street.loc[index] = [coordinates]
+     &lt;a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=20'&gt;21&lt;/a&gt; g = geocoder.osm(df_street['coordinates'][index], method='reverse')
+---&gt; &lt;a href='vscode-notebook-cell:/c%3A/Users/quent/OneDrive/Documents/GitHub/data_group_9/Assignment%203/Assignment_3.ipynb#W5sZmlsZQ%3D%3D?line=21'&gt;22&lt;/a&gt; list_streets.append(g.json['street'])
+
+
+KeyError: 'street'
+</code></pre></div></div>
+
+<p>We made a set out of the list, so every street only occured once. This way we could count how many times a street occured in the list, using the set and we could now find which street has the most AirBnBs</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># (https://medium.com/@Saslow/how-do-you-get-the-matching-elements-in-an-integer-array-2ea5d01712bd)
+</span>
+<span class="n">list_streets_complete</span> <span class="o">=</span> <span class="n">list_streets</span> <span class="c1">#do not overwrite this code when running the geocoder function
+</span><span class="n">set_streets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">list_streets_complete</span><span class="p">)</span>
+
+<span class="c1"># function to count how many streets occured in the list using the set
+</span><span class="k">def</span> <span class="nf">count_elements_in_set</span><span class="p">(</span><span class="n">input_list</span><span class="p">,</span> <span class="n">input_set</span><span class="p">):</span>
+    <span class="n">element_counts</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">input_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">input_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">element_counts</span><span class="p">:</span>
+                <span class="n">element_counts</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">element_counts</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">element_counts</span>
+
+<span class="c1"># using the function to create a dataframe in which we count how often streets occur
+</span><span class="n">result</span> <span class="o">=</span> <span class="n">count_elements_in_set</span><span class="p">(</span><span class="n">list_streets_complete</span><span class="p">,</span> <span class="n">set_streets</span><span class="p">)</span>
+<span class="n">result_df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s">'Count'</span><span class="p">]).</span><span class="n">T</span>
+<span class="n">sorted_df</span> <span class="o">=</span> <span class="n">result_df</span><span class="p">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s">'Count'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">sorted_df</span><span class="p">,</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+
+<span class="c1"># finding in which street most AirBnB locations can be found
+</span><span class="n">street_with_highest_count</span> <span class="o">=</span> <span class="n">sorted_df</span><span class="p">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The street that has the most AirBnB locations is the'</span><span class="p">,</span> <span class="n">street_with_highest_count</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                               Count
+Nassaukade                        34
+Da Costakade                       9
+Prinsengracht                      8
+Keizersgracht                      8
+Brouwersgracht                     7
+...                              ...
+Eerste Jacob van Campenstraat      1
+Pieter Lastmankade                 1
+Fritz Conijnstraat                 1
+Tweede Egelantiersdwarsstraat      1
+Ternatestraat                      1
+
+[562 rows x 1 columns] 
+
+The street that has the most AirBnB locations is the Nassaukade
+</code></pre></div></div>
+
+<p>We found that the Nassaukade street has the most AirBnb’s.</p>
+
+<h3 id="question-4-does-the-data-from-airbnb-correspond-with-the-data-from-the-basis-bestanden-gebied-amsterdam-bbga">Question 4: Does the data from AirBnB correspond with the data from the Basis Bestanden Gebied Amsterdam (BBGA)?</h3>
+
+<p>We extracted the data about the amount of AirBnBs per neighbourhood that is corresponding to the neighbourhoods of the AirBnB data. We had to replace some names, so the neighbourhoods names in both dataframes corresponded. We then counted merged the dataframes in order to plot them in the same graph.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="nn">plotly.express</span> <span class="kn">import</span> <span class="n">bar</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="c1"># (https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.merge.html)
+</span>
+<span class="n">bbga_xlsx</span> <span class="o">=</span> <span class="s">'data/2023_BBGA_0614_cf8d825e89_1.xlsx'</span>
+<span class="n">xlsx_data</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">bbga_xlsx</span><span class="p">)</span>
+
+<span class="c1"># Three columns are extracted from the excel file and the cells with information about the neighbourhoods 
+# corresponding with the AirBnB data are extracted
+</span><span class="n">df_airbnb</span> <span class="o">=</span> <span class="n">xlsx_data</span><span class="p">[[</span><span class="s">'gebiednaam'</span><span class="p">,</span> <span class="s">'sdnaam'</span><span class="p">,</span> <span class="s">'BHVESTAIRBNB'</span><span class="p">]]</span>
+<span class="n">df_airbnb_wijken</span> <span class="o">=</span> <span class="n">df_airbnb</span><span class="p">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">3937</span><span class="p">:</span><span class="mi">3962</span><span class="p">]</span>
+
+<span class="c1"># The names of the neighbourhoods are replaced with the corresponding name in the AirBnB data and this is applied to the 'gebiedsnaam' column
+</span><span class="n">replace_streets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"Oud-Zuid"</span><span class="p">:</span> <span class="s">"Zuid"</span><span class="p">,</span>
+    <span class="s">"De Aker, Sloten, Nieuw-Sloten"</span><span class="p">:</span> <span class="s">"De Aker - Nieuw Sloten"</span><span class="p">,</span>
+    <span class="s">"Oud West, De Baarsjes"</span><span class="p">:</span> <span class="s">"De Baarsjes - Oud-West"</span><span class="p">,</span>
+    <span class="s">"Geuzenveld, Slotermeer"</span><span class="p">:</span> <span class="s">"Geuzenveld - Slotermeer"</span><span class="p">,</span>
+    <span class="s">"De Pijp, Rivierenbuurt"</span><span class="p">:</span> <span class="s">"De Pijp - Rivierenbuurt"</span><span class="p">,</span>
+    <span class="s">"IJburg, Zeeburgereiland"</span><span class="p">:</span> <span class="s">"IJburg - Zeeburgereiland"</span><span class="p">,</span>
+    <span class="s">"Buitenveldert, Zuidas"</span><span class="p">:</span> <span class="s">"Buitenveldert - Zuidas"</span><span class="p">,</span>
+    <span class="s">"Gaasperdam"</span><span class="p">:</span> <span class="s">"Gaasperdam - Driemond"</span><span class="p">,</span>
+    <span class="s">"Indische Buurt, Oostelijk Havengebied"</span><span class="p">:</span> <span class="s">"Oostelijk Havengebied - Indische Buurt"</span>
+<span class="p">}</span>
+
+<span class="n">df_airbnb_wijken</span><span class="p">[</span><span class="s">'gebiednaam'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_airbnb_wijken</span><span class="p">[</span><span class="s">'gebiednaam'</span><span class="p">].</span><span class="n">replace</span><span class="p">(</span><span class="n">replace_streets</span><span class="p">)</span>
+
+<span class="c1"># excel file converted to csv
+</span><span class="n">df_airbnb_wijken</span><span class="p">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">"bbga_data_needed.csv"</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">df_wijken</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'bbga_data_needed.csv'</span><span class="p">)</span>
+
+<span class="c1"># AirBnB data column is renamed and it is calculated how often these occur
+</span><span class="n">bnb_df</span><span class="p">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">"neighbourhood"</span><span class="p">:</span> <span class="s">"gebiednaam"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">count_gebied</span> <span class="o">=</span> <span class="n">bnb_df</span><span class="p">[</span><span class="s">'gebiednaam'</span><span class="p">].</span><span class="n">value_counts</span><span class="p">().</span><span class="n">reset_index</span><span class="p">().</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">'index'</span><span class="p">:</span> <span class="s">'gebiednaam'</span><span class="p">,</span> <span class="mi">0</span> <span class="p">:</span> <span class="s">'count'</span><span class="p">})</span>
+
+<span class="c1"># BBGA data and AirBnB data are merged into one dataframe
+</span><span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_wijken</span><span class="p">,</span> <span class="n">count_gebied</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s">'gebiednaam'</span><span class="p">)</span>
+<span class="n">merged_df</span><span class="p">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s">"BHVESTAIRBNB"</span><span class="p">:</span> <span class="s">"BHVESTAIRBNB : BBGA"</span><span class="p">,</span> <span class="s">"count"</span> <span class="p">:</span> <span class="s">"AirBnB"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">merged_df</span><span class="p">)</span>
+
+<span class="c1"># Plotting the merged data frame
+</span><span class="n">ax</span> <span class="o">=</span> <span class="n">merged_df</span><span class="p">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">'bar'</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s">'gebiednaam'</span><span class="p">,</span> <span class="n">logy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'Neighbourhood'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'Amount of AirBnBs'</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Comparison of amount of the data Airbnbs by the BBGA data and the AirBnB data per neighbourhood'</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  df_airbnb_wijken['gebiednaam'] = df_airbnb_wijken['gebiednaam'].replace(replace_streets)
+
+
+                                gebiednaam      sdnaam  BHVESTAIRBNB : BBGA  \
+0                             Centrum-West     Centrum               3525.0   
+1                             Centrum-Oost     Centrum               2766.0   
+2                               Westerpark        West               2125.0   
+3                            Bos en Lommer        West               1551.0   
+4                   De Baarsjes - Oud-West        West               4868.0   
+5                  Geuzenveld - Slotermeer  Nieuw-West                375.0   
+6                                   Osdorp  Nieuw-West                270.0   
+7                   De Aker - Nieuw Sloten  Nieuw-West                204.0   
+8                              Slotervaart  Nieuw-West                616.0   
+9                                     Zuid        Zuid               2045.0   
+10                  Buitenveldert - Zuidas        Zuid                408.0   
+11                 De Pijp - Rivierenbuurt        Zuid               3593.0   
+12                                Oud-Oost        Oost               1747.0   
+13  Oostelijk Havengebied - Indische Buurt        Oost               1350.0   
+14                         Watergraafsmeer        Oost                761.0   
+15                IJburg - Zeeburgereiland        Oost                637.0   
+16                              Noord-West       Noord                427.0   
+17                               Oud-Noord       Noord                796.0   
+18                              Noord-Oost       Noord                365.0   
+19                         Bijlmer-Centrum    Zuidoost                149.0   
+20                            Bijlmer-Oost    Zuidoost                133.0   
+21                   Gaasperdam - Driemond    Zuidoost                153.0   
+
+    AirBnB  
+0     1006  
+1      793  
+2      584  
+3      424  
+4     1382  
+5      116  
+6       44  
+7       74  
+8      164  
+9      599  
+10     100  
+11     935  
+12     506  
+13     320  
+14     262  
+15     183  
+16     218  
+17     402  
+18     137  
+19      47  
+20      39  
+21      51  
+</code></pre></div></div>
+
+<p><img src="images/assignment_3_7_2.png" alt="png" />
+This results in the above graph.</p>
+
+<h3 id="question-5-how-many-hotel-rooms-should-be-built-if-amsterdam-wants-to-accommodate-the-amount-of-visitors-that-can-stay-in-airbnbs">Question 5: How many hotel rooms should be built if Amsterdam wants to accommodate the amount of visitors that can stay in AirBnBs?</h3>
+
+<p>Before, we already calculated the amount of people that could sleep in the available private rooms and in the available apartments on AirBnB for a week. All other visitors already had to stay in other accommodations. Here we calculated the amount of hotelrooms that would be needed to accommodate the people that could stay in AirBnBs. We assume people would sleep in two person rooms.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="n">airbnb_av</span> <span class="o">=</span> <span class="n">people_private</span> <span class="o">+</span> <span class="n">people_ap</span>
+<span class="n">hotelrooms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">airbnb_av</span><span class="o">/</span><span class="mi">2</span> <span class="o">//</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">percentage</span> <span class="o">=</span> <span class="p">(</span><span class="n">airbnb_av</span> <span class="o">/</span> <span class="n">visitors</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The amount of hotelrooms that needs to be build extra is'</span><span class="p">,</span> <span class="n">hotelrooms</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'</span><span class="se">\n</span><span class="s">The percentage of visitors that can stay in AirBnBs is </span><span class="si">{</span><span class="n">percentage</span><span class="p">:</span> <span class="p">.</span><span class="mi">1</span><span class="n">f</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The amount of hotelrooms that needs to be build extra is 4543
+
+The percentage of visitors that can stay in AirBnBs is  30.3
+</code></pre></div></div>
+
+<p>4543 hotelrooms need to be built extra and 30.3 of visitors can stay in AirBnb’s.</p>
+
+<h3 id="question-6-how-many-different-licenses-are-issues-for-the-available-airbnbs-for-the-event">Question 6: How many different licenses are issues for the available AirBnBs for the event?</h3>
+<p>We calculated the licenses that were issues for the available private rooms and apartments on AirBnB, below.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># (https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nunique.html)
+</span>
+<span class="n">license_pv</span> <span class="o">=</span> <span class="n">bnb_pv</span><span class="p">[</span><span class="s">'license'</span><span class="p">].</span><span class="n">nunique</span><span class="p">()</span>
+<span class="n">license_ap</span> <span class="o">=</span> <span class="n">bnb_nf</span><span class="p">[</span><span class="s">'license'</span><span class="p">].</span><span class="n">nunique</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s">'The number of licenses issued for the AirBnBs booked during the event is'</span><span class="p">,</span> <span class="n">license_pv</span> <span class="o">+</span> <span class="n">license_ap</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The number of licenses issued for the AirBnBs booked during the event is 3764
+</code></pre></div></div>
+
+<p>3764 licenses are to be issued for AirBnb’s booked during the event.</p>
+
+<p>To conclude, Amsterdam will receive a large amount of tourist tax. However this is mostly received from other accommodations than AirBbnb.
+This is because there are not a lot of available AirBnbs in the city compared to the number of visitors. We can see in the 
+graph that compares the BBGA data with the AirBnB data, that there are more AirBnBs registered in the BBGA than the AirBnb data shows.
+The percentage of people that can stay in AirBnBs is 30,3%. This amount is not very high, but in order to allow other tourist is the city as well,
+we consider this form of accomodation valuable to the city.</p>
+
+<h3 id="references">References</h3>
+<ul>
+  <li>https://docs.python.org/3/library/re.html</li>
+  <li>https://stackoverflow.com/questions/69052038/remove-using-regular-expression</li>
+  <li>https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.reset_index.html</li>
+  <li>https://www.geeksforgeeks.org/different-ways-to-iterate-over-rows-in-pandas-dataframe/</li>
+  <li>https://www.amsterdam.nl/veelgevraagd/toeristenbelasting-2c7c2#</li>
+  <li>https://datascientyst.com/reverse-geocoding-latitude-longitude-city-country-python-pandas/</li>
+  <li>https://medium.com/@Saslow/how-do-you-get-the-matching-elements-in-an-integer-array-2ea5d01712bd</li>
+  <li>https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.nunique.html</li>
+  <li>https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.merge.html</li>
+  <li>Stack overflow is used for multiple lines</li>
+</ul>
+
+<p><a href="./">Back</a></p>
+
+
+      <footer class="site-footer">
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </main>
+  </body>
+</html>
